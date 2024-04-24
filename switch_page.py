@@ -1,7 +1,10 @@
 import streamlit as st
 from metrics_page import show_metrics_page
 from streamlit_option_menu import option_menu
+from performance_page import show_performance_page
+from st_setup import setup_page
 
+setup_page()
 
 def navigation_bar():
     with st.sidebar:
@@ -25,3 +28,9 @@ def navigation_bar():
         show_promptground()
     else:
         show_performance_page()
+
+def main():
+    navigation_bar()
+
+if __name__ == "__main__":
+    main()

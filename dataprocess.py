@@ -5,7 +5,7 @@ import numpy as np
 import json
 import pandas as pd
 
-matplotlib.use('Agg')
+
 
 class DataProcessor:
     def __init__(self, file_path):
