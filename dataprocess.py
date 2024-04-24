@@ -4,6 +4,8 @@ import matplotlib.colors as mcolors
 import numpy as np
 import json
 import pandas as pd
+import os
+from dotenv import load_dotenv
 
 
 
@@ -156,4 +158,5 @@ def main(file_path):
     plotter.plot_confusion_matrix()
 
 if __name__ == '__main__':
-    main('https://github.com/aiearthhack/PromptCraft/blob/main/static/sample.csv')
+    url = os.environ.get('AZURE_URL')
+    main(ourl)

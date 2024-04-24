@@ -2,8 +2,11 @@ import streamlit as st
 import dataprocess as dp
 import matplotlib.pyplot as plt
 import numpy as np
+import os
+from dotenv import load_dotenv
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 def show_metrics_page():
     # Page title
@@ -33,7 +36,8 @@ def show_metrics_page():
     st.markdown("- Total: 14")
 
     # Create instances of DataProcessor and Plotter
-    processor = dp.DataProcessor('https://github.com/aiearthhack/PromptCraft/blob/main/static/sample.csv')
+    url = os.environ.get('AZURE_URL')
+    processor = dp.DataProcessor(url)
     plotter = dp.Plotter(processor)
 
     # Two graphs
