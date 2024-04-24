@@ -156,4 +156,4 @@ def main(file_path):
     plotter.plot_confusion_matrix()
 
 if __name__ == '__main__':
-    main('/Users/hsin/Desktop/MS-InformationScience/UW_foster/python_work/promptcraft/PromptCraft/static/sample.csv')
+    main('https://github.com/aiearthhack/PromptCraft/blob/main/static/sample.csv')

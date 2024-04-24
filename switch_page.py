@@ -2,7 +2,7 @@ import streamlit as st
 from metrics_page import show_metrics_page
 from streamlit_option_menu import option_menu
 from performance_page import show_performance_page
-from st_setup import setup_page
+from PromptCraft.app import setup_page
 
 setup_page()
 

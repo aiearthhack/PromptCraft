@@ -33,7 +33,7 @@ def show_metrics_page():
     st.markdown("- Total: 14")
 
     # Create instances of DataProcessor and Plotter
-    processor = dp.DataProcessor('./static/sample.csv')
+    processor = dp.DataProcessor('https://github.com/aiearthhack/PromptCraft/blob/main/static/sample.csv')
     plotter = dp.Plotter(processor)
 
     # Two graphs
