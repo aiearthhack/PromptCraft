@@ -1,11 +1,14 @@
 import streamlit as st
+from st_setup import setup_page, apply_custom_css
+setup_page()
+
 from metrics_page import show_metrics_page
 from streamlit_option_menu import option_menu
 from performance_page import show_performance_page
-from st_setup import setup_page
 from promptground_page import show_promptground_page
 
-setup_page()
+
+apply_custom_css()
 
 def navigation_bar():
     with st.sidebar:
@@ -16,6 +19,7 @@ def navigation_bar():
             icons=['house', "graph-up-arrow", 'gear'],
             menu_icon="cast",
             # orientation="horizontal",
+            default_index=0,
             styles={
                 "nav-link": {
                     "text-align": "left",

@@ -146,53 +146,53 @@ def display_model_data(samples, models, selected_solution, selected_models):
                     with st.expander(f"{get_emoji(details['result'])} **Criterion {crit.split('_')[1]} - {[crit]}**", expanded=True):
                         st.write(f"**Reason:** {details['reason']}", unsafe_allow_html=True)
 
-def apply_custom_css():
-    """ Apply custom CSS to reduce padding and margins for maximum screen utilization. """
-    custom_css = """
-        <style>
-            /* General padding and margin adjustments for the app */
-            .css-18e3th9 {  /* This is the main content area class as of the latest versions of Streamlit */
-                padding: 0rem; /* Eliminate padding around the main content area */
-            }
-            .stButton {
-                display: inline-block;
-                width: 20%; /* Adjust width depending on number of checkboxes */
-                padding-right: 10px; /* Spacing between checkboxes */
-            }
-            .activeButton {
-                background-color: #007bff; /* Change background color for active state */
-                color: #fff; /* Change text color for active state */
-                border: 1px solid #007bff; /* Change border color for active state */
-                border-radius: 5px;
-            }
-            .streamlit-expanderHeader {  /* Reduce padding inside expander headers */
-                padding: 0.25rem 1rem; /* Smaller padding for a tighter look */
-                font-size: 1.25rem;     /* Increase font size in expander headers and bold the title */
-            }
-            .streamlit-expanderContent {  /* Reduce margin inside expander content */
-                margin: 0; /* Remove margin to maximize content space */
-            }
-            /* Adjust layout for columns to reduce space between them */
-            .block-container > .row > .col { 
-                padding: 2px; /* Reduce padding between columns */
-            }
-            /* Adjust overall container size to be more edge-to-edge */
-            .main .block-container { 
-                max-width: 95%; /* Optionally increase to 100% to use the full width */
-            }
-                        /* Set the basic font size to 16px */
-            html, body, .stApp {
-                font-size: 16px;
-            }
-            /* Make model checkboxes display in a row */
-            .stCheckbox {
-                display: inline-block;
-                width: 20%; /* Adjust width depending on number of checkboxes */
-                padding-right: 10px; /* Spacing between checkboxes */
-            }
-        </style>
-    """
-    st.markdown(custom_css, unsafe_allow_html=True)
+# def apply_custom_css():
+#     """ Apply custom CSS to reduce padding and margins for maximum screen utilization. """
+#     custom_css = """
+#         <style>
+#             /* General padding and margin adjustments for the app */
+#             .css-18e3th9 {  /* This is the main content area class as of the latest versions of Streamlit */
+#                 padding: 0rem; /* Eliminate padding around the main content area */
+#             }
+#             .stButton {
+#                 display: inline-block;
+#                 width: 20%; /* Adjust width depending on number of checkboxes */
+#                 padding-right: 10px; /* Spacing between checkboxes */
+#             }
+#             .activeButton {
+#                 background-color: #007bff; /* Change background color for active state */
+#                 color: #fff; /* Change text color for active state */
+#                 border: 1px solid #007bff; /* Change border color for active state */
+#                 border-radius: 5px;
+#             }
+#             .streamlit-expanderHeader {  /* Reduce padding inside expander headers */
+#                 padding: 0.25rem 1rem; /* Smaller padding for a tighter look */
+#                 font-size: 1.25rem;     /* Increase font size in expander headers and bold the title */
+#             }
+#             .streamlit-expanderContent {  /* Reduce margin inside expander content */
+#                 margin: 0; /* Remove margin to maximize content space */
+#             }
+#             /* Adjust layout for columns to reduce space between them */
+#             .block-container > .row > .col { 
+#                 padding: 2px; /* Reduce padding between columns */
+#             }
+#             /* Adjust overall container size to be more edge-to-edge */
+#             .main .block-container { 
+#                 max-width: 95%; /* Optionally increase to 100% to use the full width */
+#             }
+#                         /* Set the basic font size to 16px */
+#             html, body, .stApp {
+#                 font-size: 16px;
+#             }
+#             /* Make model checkboxes display in a row */
+#             .stCheckbox {
+#                 display: inline-block;
+#                 width: 20%; /* Adjust width depending on number of checkboxes */
+#                 padding-right: 10px; /* Spacing between checkboxes */
+#             }
+#         </style>
+#     """
+#     st.markdown(custom_css, unsafe_allow_html=True)
 
 def remove_last_part(s):
     last_index = s.rfind('_')
@@ -202,7 +202,7 @@ def remove_last_part(s):
 def show_performance_page():
 
     st.title("Performance Board")
-    apply_custom_css() 
+    # apply_custom_css() 
 
     url = os.environ.get('AZURE_URL')
     samples = load_data(url)
