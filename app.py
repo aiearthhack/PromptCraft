@@ -3,6 +3,7 @@ from metrics_page import show_metrics_page
 from streamlit_option_menu import option_menu
 from performance_page import show_performance_page
 from st_setup import setup_page
+from promptground_page import show_promptground_page
 
 setup_page()
 
@@ -25,7 +26,7 @@ def navigation_bar():
     if selected == "Metrics":
         show_metrics_page()
     elif selected == "Promptground":
-        show_promptground()
+        show_promptground_page()
     else:
         show_performance_page()
 
