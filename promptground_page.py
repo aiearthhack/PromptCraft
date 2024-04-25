@@ -32,6 +32,75 @@ def show_promptground_page():
     if 'combined_content' not in st.session_state:
         st.session_state['combined_content'] = ""
 
+
+    st.session_state['full_columns_content'] = """
+    0. Solution ID
+    1. Challenge Name
+    2. Solution Status
+    3. Provide a one-line summary of your solution.
+    4. What specific problem are you solving?
+    5. What is your solution?
+    6. Who does your solution serve, and in what ways will the solution impact their lives?
+    7. How are you and your team well-positioned to deliver this solution?
+    8. Which dimension of the Challenge does your solution most closely address?
+    9. In what city, town, or region is your solution team headquartered?
+    10. In what country is your solution team headquartered?
+    11. What is your solution's stage of development?
+    12. Please share details about what makes your solution a Prototype rather than a Concept.
+    13. How many people does your solution currently serve?
+    14. Why are you applying to Solve?
+    15. In which of the following areas do you most need partners or support?
+    16. Is your solution an active or past participant in another entrepreneurship network?
+    17. Please share the names of the other entrepreneurship networks.
+    18. How did you first hear about Solve?
+    19. Tell us more about how you found out about Solveâ€™s 2023 Global Challenges.
+    20. What makes your solution innovative?
+    21. What are your impact goals for the next year and the next five years, and how will you achieve them?
+    22. Which of the UN Sustainable Development Goals does your solution address?
+    23. How are you measuring your progress toward your impact goals?
+    24. What is your theory of change?
+    25. Describe the core technology that powers your solution.
+    26. Which of the following categories best describes your solution?
+    27. How do you know that this technology works?
+    28. Please select the technologies currently used in your solution:
+    29. In which countries do you currently operate?
+    30. In which countries will you be operating within the next year?
+    31. What type of organization is your solution team?
+    32. If you selected Other, please explain here.
+    33. How many people work on your solution team?
+    34. How long have you been working on your solution?
+    35. What is your approach to incorporating diversity, equity, and inclusivity into your work?
+    36. What is your business model?
+    37. Do you primarily provide products or services directly to individuals, to other organizations, or to the government?
+    38. What is your plan for becoming financially sustainable?
+    39. Share some examples of how your plan to achieve financial sustainability has been successful so far.
+    """
+
+    st.session_state['selected_columns_content'] = """
+    0. Solution ID
+    1. Challenge Name
+    3. Provide a one-line summary of your solution.
+
+    4. What specific problem are you solving?
+    5. What is your solution?
+    6. Who does your solution serve, and in what ways will the solution impact their lives?
+    7. How are you and your team well-positioned to deliver this solution?
+    8. Which dimension of the Challenge does your solution most closely address?
+
+    11. What is your solution's stage of development?
+    12. Please share details about what makes your solution a Prototype rather than a Concept.
+    13. How many people does your solution currently serve?
+
+    20. What makes your solution innovative?
+    21. What are your impact goals for the next year and the next five years, and how will you achieve them?
+
+    25. Describe the core technology that powers your solution.
+    26. Which of the following categories best describes your solution?
+
+    28. Please select the technologies currently used in your solution:
+    29. In which countries do you currently operate?
+    """
+
     # Create two columns with a 1:2 ratio
     col_left, col_right = st.columns([1, 2])
 
@@ -67,13 +136,16 @@ def show_promptground_page():
                                    
     # Right Column for Combined Text Output and Copy Button
     with col_right:
-        col1, col2 = st.columns([0.8, 0.2])
-        with col1:
-            st.subheader("Prompt")
+        tab1, tab2, tab3 = st.tabs(["Prompt", "Full Content (40 columns)", "Selected Content (16 columns)"])
 
-        with col2:
-            if st.button("Clear All"):
-                st.session_state['combined_content'] = ''
+        with tab1:
+            col1, col2 = st.columns([0.8, 0.2])
+        # with col1:
+        #     st.subheader("Prompt")
+
+        # with col2:
+        #     if st.button("Clear All", key="clear_all"):
+        #         st.session_state['combined_content'] = ''
         
         # A large text area for combined user input, criteria input, and solution output
         combined_content = st.text_area("Combined instruction, criteria, and solution content into a prompt", 
@@ -86,6 +158,17 @@ def show_promptground_page():
             # Copy to clipboard and display it
             st.write("Content copied to clipboard:", combined_content)
             st.experimental_set_query_params(text=combined_content)
+
+        with tab2:
+            full_content = st.text_area("Full Content (40 columns)",
+                                        height=600,
+                                        value=st.session_state['full_columns_content'])
+            
+        with tab3:
+            selected_content = st.text_area("Selected Content (16 columns)",
+                                            height=600,
+                                            value=st.session_state['selected_columns_content'])
+
 
 
 def print_st():
