@@ -11,24 +11,6 @@ prompts = {
             }
         }
         """,
-    "prompt_train_criterion_instruction":"""
-    As a solution proposal screener, you will be given a solution id, proposal, and advance decision. Your task is to carefully read through the complete solution.
-
-    1. Based on the following criterion, assessing the solution step by step.
-    2. Provide your assessment(pass/fail). 
-    3. Compare your assessment to original advance decision (True: pass, False: fail).
-    4. List down your reasoning of the assessment. Clearly explain why your assessment align or conflict with the original "Advance" decision.
-    5. Provide your assessment in a valid JSON format:
-        {
-            "id": "",
-            "assessment": {
-                "criterion_n": {
-                    "result": "'pass' or 'fail'",
-                    "reason": "provide reasoning of your assessment. Clearly explain your steps of thought especially when you conflict with original advance decision."
-                }
-            }
-        }
-    """,
     "criterion_1":"""
     <criterion_1>
     Criterion 1
