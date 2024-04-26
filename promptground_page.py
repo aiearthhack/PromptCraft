@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from dataClean import format_proposal
 from SproutsPrompts import get_prompt, get_prompt_list
+from solution_columns import get_solution_col, challenge_2023, challenge_2024
 import os
 from dotenv import load_dotenv
 
@@ -11,7 +12,7 @@ def show_promptground_page():
     st.title("Promptground")
 
     load_dotenv()
-    url = os.environ.get('AZURE_URL')
+    url = os.environ.get('csv_2023')
 
     samples = pd.read_csv(url)
     solutions = samples['Solution ID'].tolist()
@@ -31,75 +32,12 @@ def show_promptground_page():
         st.session_state['solution_type'] = 'Selected Content (16 columns)'
     if 'combined_content' not in st.session_state:
         st.session_state['combined_content'] = ""
+    if 'selected_columns_content_per_criterion' not in st.session_state:
+        st.session_state['selected_columns_content_per_criterion'] = ""
 
 
-    st.session_state['full_columns_content'] = """
-    0. Solution ID
-    1. Challenge Name
-    2. Solution Status
-    3. Provide a one-line summary of your solution.
-    4. What specific problem are you solving?
-    5. What is your solution?
-    6. Who does your solution serve, and in what ways will the solution impact their lives?
-    7. How are you and your team well-positioned to deliver this solution?
-    8. Which dimension of the Challenge does your solution most closely address?
-    9. In what city, town, or region is your solution team headquartered?
-    10. In what country is your solution team headquartered?
-    11. What is your solution's stage of development?
-    12. Please share details about what makes your solution a Prototype rather than a Concept.
-    13. How many people does your solution currently serve?
-    14. Why are you applying to Solve?
-    15. In which of the following areas do you most need partners or support?
-    16. Is your solution an active or past participant in another entrepreneurship network?
-    17. Please share the names of the other entrepreneurship networks.
-    18. How did you first hear about Solve?
-    19. Tell us more about how you found out about Solveâ€™s 2023 Global Challenges.
-    20. What makes your solution innovative?
-    21. What are your impact goals for the next year and the next five years, and how will you achieve them?
-    22. Which of the UN Sustainable Development Goals does your solution address?
-    23. How are you measuring your progress toward your impact goals?
-    24. What is your theory of change?
-    25. Describe the core technology that powers your solution.
-    26. Which of the following categories best describes your solution?
-    27. How do you know that this technology works?
-    28. Please select the technologies currently used in your solution:
-    29. In which countries do you currently operate?
-    30. In which countries will you be operating within the next year?
-    31. What type of organization is your solution team?
-    32. If you selected Other, please explain here.
-    33. How many people work on your solution team?
-    34. How long have you been working on your solution?
-    35. What is your approach to incorporating diversity, equity, and inclusivity into your work?
-    36. What is your business model?
-    37. Do you primarily provide products or services directly to individuals, to other organizations, or to the government?
-    38. What is your plan for becoming financially sustainable?
-    39. Share some examples of how your plan to achieve financial sustainability has been successful so far.
-    """
-
-    st.session_state['selected_columns_content'] = """
-    0. Solution ID
-    1. Challenge Name
-    3. Provide a one-line summary of your solution.
-
-    4. What specific problem are you solving?
-    5. What is your solution?
-    6. Who does your solution serve, and in what ways will the solution impact their lives?
-    7. How are you and your team well-positioned to deliver this solution?
-    8. Which dimension of the Challenge does your solution most closely address?
-
-    11. What is your solution's stage of development?
-    12. Please share details about what makes your solution a Prototype rather than a Concept.
-    13. How many people does your solution currently serve?
-
-    20. What makes your solution innovative?
-    21. What are your impact goals for the next year and the next five years, and how will you achieve them?
-
-    25. Describe the core technology that powers your solution.
-    26. Which of the following categories best describes your solution?
-
-    28. Please select the technologies currently used in your solution:
-    29. In which countries do you currently operate?
-    """
+    st.session_state['full_columns_content'] = get_solution_col(challenge_2023,range(40))
+    st.session_state['selected_columns_content'] = get_solution_col(challenge_2023, [1, 3, 4, 5, 6, 7, 8, 11, 12, 13, 20, 21, 25, 26, 28, 29])
 
     # Create two columns with a 1:2 ratio
     col_left, col_right = st.columns([1, 2])
@@ -136,7 +74,10 @@ def show_promptground_page():
                                    
     # Right Column for Combined Text Output and Copy Button
     with col_right:
-        tab1, tab2, tab3 = st.tabs(["Prompt", "Full Content (40 columns)", "Selected Content (16 columns)"])
+        tab1, tab2, tab3, tab4 = st.tabs(["Prompt", 
+                                          "Full Content (40 columns)", 
+                                          "Selected Content (16 columns)",
+                                          "Selected Content per Criterion"])
 
         with tab1:
             col1, col2 = st.columns([0.8, 0.2])
@@ -168,8 +109,21 @@ def show_promptground_page():
             selected_content = st.text_area("Selected Content (16 columns)",
                                             height=600,
                                             value=st.session_state['selected_columns_content'])
+        with tab4:
+            criterion_content = st.text_area("Selected Content per Criterion",
+                                            height=600,
+                                            value=st.session_state['selected_columns_content_per_criterion'])
 
-
+    if st.session_state[f'criterion_{1}']:
+        st.session_state['selected_columns_content_per_criterion'] = get_solution_col(challenge_2023, [0, 3, 4, 5, 6, 7, 8, 41])
+    elif st.session_state[f'criterion_{2}']:
+        st.session_state['selected_columns_content_per_criterion'] = get_solution_col(challenge_2023, [0, 7, 11, 12, 13, 29, 41])
+    elif st.session_state[f'criterion_{3}']:
+        st.session_state['selected_columns_content_per_criterion'] = get_solution_col(challenge_2023, [0, 4, 5, 6, 7, 41])
+    elif st.session_state[f'criterion_{4}']:
+        st.session_state['selected_columns_content_per_criterion'] = get_solution_col(challenge_2023, [0, 5, 20, 25, 26, 28, 41])
+    elif st.session_state[f'criterion_{5}']:
+        st.session_state['selected_columns_content_per_criterion'] = get_solution_col(challenge_2023, [0, 3, 4, 5, 6, 21, 41])
 
 def print_st():
     print(f"assistant_option: {st.session_state['assistant_option']}")

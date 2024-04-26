@@ -15,7 +15,7 @@ def load_data(file_path):
 def get_emoji(status):
     return "✅" if (status == "pass") or (status == True) else "❌"
 
-def display_decision(samples, selected_solution):
+def display_decision(samples, selected_solution, display=False):
     """
     Fetches and displays decision information for the selected solution.
 
@@ -23,16 +23,17 @@ def display_decision(samples, selected_solution):
     samples (DataFrame): DataFrame containing additional information for each solution.
     selected_solution (int): Identifier of the selected solution.
     """
-    advance = samples.loc[samples['Solution ID'] == selected_solution, 'Advance'].iloc[0]
-    judge_decision = f"Judge Decision: {get_emoji(advance)}"
-    if advance:
-        st.write(judge_decision)
-    else:
-        fail_reason = samples.loc[samples['Solution ID'] == selected_solution, 'FailReason_1'].iloc[0]
-        st.write(f"{judge_decision}")
-        st.write(f"Fail Reason: {fail_reason}")
+    if display:
+        advance = samples.loc[samples['Solution ID'] == selected_solution, 'Advance'].iloc[0]
+        judge_decision = f"Judge Decision: {get_emoji(advance)}"
+        if advance:
+            st.write(judge_decision)
+        else:
+            fail_reason = samples.loc[samples['Solution ID'] == selected_solution, 'FailReason_1'].iloc[0]
+            st.write(f"{judge_decision}")
+            st.write(f"Fail Reason: {fail_reason}")
 
-def render_solution_buttons(samples, solutions):
+def render_solution_buttons(samples, solutions, display=False):
     """
     Renders a button for each solution. When clicked, it triggers display_decision and
     potentially display_model_data.
@@ -75,20 +76,12 @@ def render_solution_buttons(samples, solutions):
                 with cols[j]:
                     if st.button(f"Solution {solution}", key=f"solution_{solution}"):
                         st.session_state['selected_solution'] = solution
-                        display_decision(samples, solution)
+                        if display:
+                            display_decision(samples, solution)
                         print(f"Selected solution: {solution}")
             else:
                 with cols[j]:
                     st.empty()
-
-    # # Display decision after looping through all solution buttons
-    # if selected_solution is not None:
-    #     st.write("")  # Add some space
-    #     st.write("")  # Add some space
-    #     st.write("")  # Add some space
-    #     with st.expander("Decision", expanded=True):
-    #         display_decision(samples, selected_solution)
-            
 
 # Function to render checkboxes for models under the selected solution
 def render_model_checkboxes(models):
@@ -204,26 +197,52 @@ def show_performance_page():
     st.title("Performance Board")
     # apply_custom_css() 
 
-    url = os.environ.get('AZURE_URL')
-    samples = load_data(url)
-    solutions = samples['Solution ID'].to_list()
-    # print(f"Solutions: {solutions}")
+    tab1, tab2 = st.tabs(["2023", "2024"])
+    # with tab1:
+        # url = os.environ.get('csv_2023')
 
-    models = {
-            "gpt_full_result": "Model GPT4 + Full Content + one-shot",
+        # models = {
+        #     "gpt_full_result": "Model GPT4 + Full Content + one-shot",
+        #     "gpt_selected_result": "Model GPT4 + Selected Content + one-shot",
+        #     "gpt_summary_result": "Model GPT4 + Summary + one-shot",
+        #     "claude_selected_result":"Model Claude + Selected Content + one-shot",
+        #     "claude_criteria_result":"Model Claude + Selected Content + criterion per shot",
+        # }
+
+        # samples = load_data(url)
+        # solutions = samples['Solution ID'].to_list()
+
+        # if 'selected_solution' not in st.session_state:
+        #     st.session_state['selected_solution'] = None
+        # render_solution_buttons(samples, solutions, display=True)
+        # if st.session_state['selected_solution'] is not None:
+        #     selected_models = render_model_checkboxes(models)
+        #     display_model_data(samples, models, st.session_state['selected_solution'], selected_models)
+
+    with tab2:
+        url = os.environ.get('csv_2024')
+
+        models = {
+            "hd_result": "Model GPT4 + Full Content + criterion per shot",
             "gpt_selected_result": "Model GPT4 + Selected Content + one-shot",
-            "gpt_summary_result": "Model GPT4 + Summary + one-shot",
-            "claude_selected_result":"Model Claude + Selected Content + one-shot",
-            "claude_criteria_result":"Model Claude + Selected Content + criterion per shot",
+            "claude_selected_result":"Model Claude + Selected Content + one-shot"
         }
+
+        samples = load_data(url)
+        solutions = samples['Solution ID'][:20].to_list()
+
+        if 'selected_solution' not in st.session_state:
+            st.session_state['selected_solution'] = None
+        render_solution_buttons(samples, solutions, display=False)
+        if st.session_state['selected_solution'] is not None:
+            selected_models = render_model_checkboxes(models)
+            display_model_data(samples, models, st.session_state['selected_solution'], selected_models)
+    # url = os.environ.get('csv_2023')
+
+    # print(f"Solutions: {solutions}")
     # print(models.keys())
 
-    if 'selected_solution' not in st.session_state:
-        st.session_state['selected_solution'] = None
-    render_solution_buttons(samples, solutions)
-    if st.session_state['selected_solution'] is not None:
-        selected_models = render_model_checkboxes(models)
-        display_model_data(samples, models, st.session_state['selected_solution'], selected_models)
+    
 
 if __name__ == "__main__":
     show_performance_page()
