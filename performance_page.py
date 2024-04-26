@@ -229,7 +229,7 @@ def show_performance_page():
         }
 
         samples = load_data(url)
-        solutions = samples['Solution ID'][:20].to_list()
+        solutions = samples['Solution ID'].to_list()
 
         if 'selected_solution' not in st.session_state:
             st.session_state['selected_solution'] = None
