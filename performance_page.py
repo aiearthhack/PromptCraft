@@ -33,7 +33,7 @@ def display_decision(samples, selected_solution, display=False):
             st.write(f"{judge_decision}")
             st.write(f"Fail Reason: {fail_reason}")
 
-def render_solution_buttons(samples, solutions, display=False):
+def render_solution_buttons(samples, solutions, display):
     """
     Renders a button for each solution. When clicked, it triggers display_decision and
     potentially display_model_data.
@@ -44,22 +44,6 @@ def render_solution_buttons(samples, solutions, display=False):
     models (dict): Dictionary of model keys with their display names as values.
     """
     st.subheader("Select a Solution:")
-
-    # max_columns = 5
-    # num_rows = (len(solutions) + max_columns - 1) // max_columns
-
-    # selected_solution = st.session_state.get('selected_solution')
-
-    # for i in range(num_rows):
-    #     row_solutions = solutions[i * max_columns: (i + 1) * max_columns]
-    #     cols = st.columns(len(row_solutions))
-
-    #     for col, solution in zip(cols, row_solutions):
-    #         with col:
-    #             if st.button(f"Solution {solution}", key=f"solution_{solution}"):
-    #                 st.session_state['selected_solution'] = solution
-    #                 display_decision(samples, solution)
-    #                 print(f"Selected solution: {solution}")
 
     max_columns = 5
     num_rows = (len(solutions) + max_columns - 1) // max_columns
@@ -77,14 +61,14 @@ def render_solution_buttons(samples, solutions, display=False):
                     if st.button(f"Solution {solution}", key=f"solution_{solution}"):
                         st.session_state['selected_solution'] = solution
                         if display:
-                            display_decision(samples, solution)
+                            display_decision(samples, solution, display)
                         print(f"Selected solution: {solution}")
             else:
                 with cols[j]:
                     st.empty()
 
 # Function to render checkboxes for models under the selected solution
-def render_model_checkboxes(models):
+def render_model_checkboxes(year, models, identifier):
     """
     Renders checkboxes for each model in the selected solution.
     Args:
@@ -102,7 +86,8 @@ def render_model_checkboxes(models):
     for model_key, display_name in models.items():
         # Use the current column for this checkbox
         with cols[col_index]:
-            if st.checkbox(display_name, key=f"checkbox_{model_key}"):
+            if st.checkbox(display_name, key=f"checkbox_{year}_{model_key}_{identifier}"):
+                print(f"Creating checkbox with key: checkbox_{model_key}_{identifier}")
                 selected_models.append(model_key)
 
         # Move to the next column, and reset to 0 if it exceeds 2 (since there are three columns)
@@ -139,54 +124,6 @@ def display_model_data(samples, models, selected_solution, selected_models):
                     with st.expander(f"{get_emoji(details['result'])} **Criterion {crit.split('_')[1]} - {[crit]}**", expanded=True):
                         st.write(f"**Reason:** {details['reason']}", unsafe_allow_html=True)
 
-# def apply_custom_css():
-#     """ Apply custom CSS to reduce padding and margins for maximum screen utilization. """
-#     custom_css = """
-#         <style>
-#             /* General padding and margin adjustments for the app */
-#             .css-18e3th9 {  /* This is the main content area class as of the latest versions of Streamlit */
-#                 padding: 0rem; /* Eliminate padding around the main content area */
-#             }
-#             .stButton {
-#                 display: inline-block;
-#                 width: 20%; /* Adjust width depending on number of checkboxes */
-#                 padding-right: 10px; /* Spacing between checkboxes */
-#             }
-#             .activeButton {
-#                 background-color: #007bff; /* Change background color for active state */
-#                 color: #fff; /* Change text color for active state */
-#                 border: 1px solid #007bff; /* Change border color for active state */
-#                 border-radius: 5px;
-#             }
-#             .streamlit-expanderHeader {  /* Reduce padding inside expander headers */
-#                 padding: 0.25rem 1rem; /* Smaller padding for a tighter look */
-#                 font-size: 1.25rem;     /* Increase font size in expander headers and bold the title */
-#             }
-#             .streamlit-expanderContent {  /* Reduce margin inside expander content */
-#                 margin: 0; /* Remove margin to maximize content space */
-#             }
-#             /* Adjust layout for columns to reduce space between them */
-#             .block-container > .row > .col { 
-#                 padding: 2px; /* Reduce padding between columns */
-#             }
-#             /* Adjust overall container size to be more edge-to-edge */
-#             .main .block-container { 
-#                 max-width: 95%; /* Optionally increase to 100% to use the full width */
-#             }
-#                         /* Set the basic font size to 16px */
-#             html, body, .stApp {
-#                 font-size: 16px;
-#             }
-#             /* Make model checkboxes display in a row */
-#             .stCheckbox {
-#                 display: inline-block;
-#                 width: 20%; /* Adjust width depending on number of checkboxes */
-#                 padding-right: 10px; /* Spacing between checkboxes */
-#             }
-#         </style>
-#     """
-#     st.markdown(custom_css, unsafe_allow_html=True)
-
 def remove_last_part(s):
     last_index = s.rfind('_')
     return s[:last_index] if last_index != -1 else s
@@ -198,34 +135,34 @@ def show_performance_page():
     # apply_custom_css() 
 
     tab1, tab2 = st.tabs(["2023", "2024"])
-    # with tab1:
-        # url = os.environ.get('csv_2023')
+    with tab1:
+        url = os.environ.get('csv_2023')
 
-        # models = {
-        #     "gpt_full_result": "Model GPT4 + Full Content + one-shot",
-        #     "gpt_selected_result": "Model GPT4 + Selected Content + one-shot",
-        #     "gpt_summary_result": "Model GPT4 + Summary + one-shot",
-        #     "claude_selected_result":"Model Claude + Selected Content + one-shot",
-        #     "claude_criteria_result":"Model Claude + Selected Content + criterion per shot",
-        # }
+        models = {
+            "gpt_full_result": "Model GPT4 + Full Content + one-shot",
+            "gpt_selected_result": "Model GPT4 + Selected Content + one-shot",
+            "gpt_summary_result": "Model GPT4 + Summary + one-shot",
+            "claude_selected_result":"Model Claude + Selected Content + one-shot",
+            "claude_criteria_result":"Model Claude + Selected Content + criterion per shot",
+        }
 
-        # samples = load_data(url)
-        # solutions = samples['Solution ID'].to_list()
+        samples = load_data(url)
+        solutions = samples['Solution ID'].to_list()
 
-        # if 'selected_solution' not in st.session_state:
-        #     st.session_state['selected_solution'] = None
-        # render_solution_buttons(samples, solutions, display=True)
-        # if st.session_state['selected_solution'] is not None:
-        #     selected_models = render_model_checkboxes(models)
-        #     display_model_data(samples, models, st.session_state['selected_solution'], selected_models)
+        if 'selected_solution' not in st.session_state:
+            st.session_state['selected_solution'] = None
+        render_solution_buttons(samples, solutions, display=True)
+        if st.session_state['selected_solution'] is not None:
+            selected_models = render_model_checkboxes(2023, models, st.session_state['selected_solution'])
+            display_model_data(samples, models, st.session_state['selected_solution'], selected_models)
 
     with tab2:
         url = os.environ.get('csv_2024')
 
         models = {
-            "hd_result": "Model GPT4 + Full Content + criterion per shot",
-            "gpt_selected_result": "Model GPT4 + Selected Content + one-shot",
-            "claude_selected_result":"Model Claude + Selected Content + one-shot"
+            "hd_result": "Model GPT4 + Full Content + criterion per shot (Charles/Justin)",
+            "gpt_selected_result": "Model GPT4 + Selected Content + one-shot (AI Sprouts)",
+            "claude_selected_result":"Model Claude + Selected Content + one-shot (AI Sprouts)"
         }
 
         samples = load_data(url)
@@ -235,13 +172,8 @@ def show_performance_page():
             st.session_state['selected_solution'] = None
         render_solution_buttons(samples, solutions, display=False)
         if st.session_state['selected_solution'] is not None:
-            selected_models = render_model_checkboxes(models)
+            selected_models = render_model_checkboxes(2024, models, st.session_state['selected_solution'])
             display_model_data(samples, models, st.session_state['selected_solution'], selected_models)
-    # url = os.environ.get('csv_2023')
-
-    # print(f"Solutions: {solutions}")
-    # print(models.keys())
-
     
 
 if __name__ == "__main__":

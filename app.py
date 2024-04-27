@@ -11,6 +11,10 @@ from promptground_page import show_promptground_page
 apply_custom_css()
 
 def navigation_bar():
+
+    if "selected" not in st.session_state:
+        st.session_state.selected = "Performance Board"
+        
     with st.sidebar:
     # with st.container():
         selected = option_menu(

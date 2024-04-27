@@ -5,13 +5,16 @@ import numpy as np
 import json
 import pandas as pd
 import os
+import ast
 from dotenv import load_dotenv
 load_dotenv()
 
-
 class DataProcessor:
-    def __init__(self, file_path):
-        self.df = self.load_data(file_path)
+    def __init__(self, file):
+        self.file = file
+        file_path = f"csv_{file}"
+        url = os.environ.get(file_path)
+        self.df = self.load_data(url)
         
     def load_data(self, file_path):
         data = pd.read_csv(file_path)
@@ -23,13 +26,20 @@ class DataProcessor:
         return s[:last_index] if last_index != -1 else s
     
     def get_model_names(self):
-        models = {
-            "gpt_full_result": "Model GPT4 + Full Content + one-shot",
-            "gpt_selected_result": "Model GPT4 + Selected Content + one-shot",
-            "gpt_summary_result": "Model GPT4 + Summary + one-shot",
-            "claude_selected_result":"Model Claude + Selected Content + one-shot",
-            "claude_criteria_result":"Model Claude + Selected Content + criterion per shot",
-        }
+        if self.file == 2023:
+            models = {
+                "gpt_full_result": "Model GPT4 + Full Content + one-shot",
+                "gpt_selected_result": "Model GPT4 + Selected Content + one-shot",
+                "gpt_summary_result": "Model GPT4 + Summary + one-shot",
+                "claude_selected_result":"Model Claude + Selected Content + one-shot",
+                "claude_criteria_result":"Model Claude + Selected Content + criterion per shot",
+            }
+        elif self.file == 2024:
+            models = {
+                "hd_result": "Model HD + Full Content + one-shot (Charles/Justin)",
+                "gpt_result": "Model GPT4 + Full Content + one-shot (AI Sprouts)",
+                "claude_result": "Model Claude + Selected Content + one-shot (AI Sprouts)",
+            } 
         model_key = models.keys()
         self.model_names = [DataProcessor.remove_last_part(model) for model in model_key]
         print(self.model_names)
@@ -88,11 +98,12 @@ class DataProcessor:
 class Plotter:
     def __init__(self, data_processor):
         self.data_processor = data_processor
+        self.df = data_processor.df
         self.model_names = data_processor.get_model_names()
-        self.model_metrics, self.conf_matrices = data_processor.get_metrics()
 
 
     def plot_confusion_matrix(self):
+        self.model_metrics, self.conf_matrices = self.data_processor.get_metrics()
         fig, axes = plt.subplots(nrows=1, ncols=5, figsize=(12, 5))
 
         for i, model in enumerate(self.model_names):
@@ -120,6 +131,7 @@ class Plotter:
         plt.show()
 
     def plot_metrics(self):
+        self.model_metrics, self.conf_matrices = self.data_processor.get_metrics()
         df = pd.DataFrame(self.model_metrics)
         df = df.drop(2, axis=0)
         df['accuracy'] = df['accuracy'].astype(float)
@@ -149,14 +161,63 @@ class Plotter:
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         plt.show()
 
-def main(file_path):
-    processor = DataProcessor(file_path)
-    model_names = processor.get_model_names()
-    model_metrics, conf_matrices = processor.get_metrics()
-    plotter = Plotter(processor)
-    plotter.plot_metrics()
-    plotter.plot_confusion_matrix()
+    def check_fail_criteria(self, message):
+        failreason = []
+        for i in range(1, 5):
+            criteria = message[f'criterion_{i}']
+            if criteria['result'] == 'fail':
+                failreason.append(i)
+        fail_str = ', '.join(map(str, failreason)) 
+        return fail_str
+
+    def count_false(self):
+        df_count = {
+            'GPT4 critierion per shot': self.df['hd_advance'].value_counts(),
+            'Claude3 selected columns': self.df['claude_selected_advance'].value_counts(),
+            'GPT4 selected columns': self.df['gpt_selected_advance'].value_counts()
+        }
+        df_count = pd.DataFrame(df_count)
+        return df_count
+    
+
+    def difference_decision(self):
+        diff_df = self.df.loc[(self.df['hd_advance'] != self.df['claude_selected_advance']) | (self.df['hd_advance'] != self.df['gpt_selected_advance']),['Solution ID','hd_advance','hd_failreason','claude_selected_advance', 'claude_selected_result', 'gpt_selected_advance', 'gpt_selected_result']]
+        print(diff_df)
+        return diff_df
+
+    def print_diff_decision(self):
+        diff = self.difference_decision()
+        diff['gpt_selected_failreason'] = diff.apply(lambda x: self.check_fail_criteria(ast.literal_eval(x['gpt_selected_result'])), axis=1)
+        diff['claude_selected_failreason'] = diff.apply(lambda x: self.check_fail_criteria(ast.literal_eval(x['claude_selected_result'])), axis=1)
+        diff.drop(columns=['gpt_selected_result', 'claude_selected_result'], inplace=True)
+        diff.rename(columns={'hd_failreason': 'GPT4 critierion per shot Fail Reason',
+                            'hd_advance': 'GPT4 critierion per shot',
+                            'claude_selected_advance': 'Claude3 selected columns',
+                            'claude_selected_failreason': 'Claude3 critierion per shot Fail Reason',
+                            'gpt_selected_advance': 'GPT4 selected columns',
+                            'gpt_selected_failreason': 'GPT4 selected columns Fail Reason'}, inplace=True)
+        # print(diff)
+        return diff
+
+def main(file:int):
+    if not isinstance(file, int):
+        raise TypeError("Expected an integer for 'file'")
+    if file == 2023:
+        file_path = os.environ.get('csv_2023')
+        processor = DataProcessor(file_path)
+        model_names = processor.get_model_names()
+        model_metrics, conf_matrices = processor.get_metrics()
+        plotter = Plotter(processor)
+        plotter.plot_metrics()
+        plotter.plot_confusion_matrix()
+    elif file == 2024:
+        file_path = os.environ.get('csv_2024')
+        processor = DataProcessor(file_path)
+        model_names = processor.get_model_names()
+        plotter = Plotter(processor)
+        plotter.count_false()
+        plotter.print_diff_decision()
+
 
 if __name__ == '__main__':
-    url = os.environ.get('AZURE_URL')
-    main(ourl)
+    main(file=2024)

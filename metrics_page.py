@@ -7,15 +7,12 @@ from dotenv import load_dotenv
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
-
 def show_metrics_page():
     # Page title
     st.header("Metrics")
 
     tab1, tab2 = st.tabs(["2023", "2024"])
     with tab1:
-        url = os.environ.get('csv_2023')
-    
         # Text
         st.markdown("### Test models and prompts:")
         st.markdown("- Model GPT4 + Full Content + one-shot")
@@ -30,7 +27,8 @@ def show_metrics_page():
         st.markdown("- Total: 14")
     
         # Create instances of DataProcessor and Plotter
-        processor = dp.DataProcessor(url)
+        # url = os.environ.get('csv_2023')
+        processor = dp.DataProcessor(2023)
         plotter = dp.Plotter(processor)
 
         # Two graphs
@@ -41,7 +39,20 @@ def show_metrics_page():
         st.pyplot(plotter.plot_confusion_matrix())
     
     with tab2:
-        url = os.environ.get('csv_2024')
+        # Create instances of DataProcessor and Plotter
+        # url = os.environ.get('csv_2024')
+        processor = dp.DataProcessor(2024)
+        plotter = dp.Plotter(processor)
+
+        # Overview
+        st.subheader("Overview")
+        st.table(plotter.count_false())
+
+
+        # Difference
+        st.subheader("Difference in Decision")
+        st.table(plotter.print_diff_decision())
+        st.markdown("Shared False: 84251, 90981, 91812, 92076")
     
     # Apply general styling
     st.markdown("""
